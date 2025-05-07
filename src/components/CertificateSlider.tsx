@@ -1,3 +1,4 @@
+
 import { useEffect, useState, useCallback, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { ChevronLeft, ChevronRight, Expand, Minimize, Loader2 } from 'lucide-react';
@@ -52,15 +53,15 @@ const CertificateSlider = ({
       }
     };
 
-    certificates.forEach((cert) => {
+    certificates.forEach((certificate) => {
       const img = new Image();
-      img.src = cert.image;
+      img.src = certificate.image;
       img.onload = handleImageLoad;
-      img.onerror = () => handleImageError(cert.image);
+      img.onerror = () => handleImageError(certificate.image);
     });
 
     return () => {
-      certificates.forEach((cert) => {
+      certificates.forEach(() => {
         const img = new Image();
         img.onload = null;
         img.onerror = null;

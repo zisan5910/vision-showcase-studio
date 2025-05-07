@@ -1,14 +1,8 @@
+
 import {
   Download,
-  Phone,
-  MapPin,
-  Linkedin,
   FileText,
-  Award,
   ScrollText,
-  Facebook,
-  Instagram,
-  Twitter,
   MessageCircle,
   UserCircle,
   School,
@@ -42,7 +36,6 @@ function App() {
   const [activeSection, setActiveSection] = useState<string>('profile');
   const [age, setAge] = useState<number>(0);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
-  const [isGhostOpen, setIsGhostOpen] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -82,7 +75,6 @@ function App() {
         return;
       }
       setIsMenuOpen(false);
-      setIsGhostOpen(false);
     };
 
     const handleClickOutside = (event: MouseEvent) => {
@@ -91,7 +83,6 @@ function App() {
         !containerRef.current.contains(event.target as Node)
       ) {
         setIsMenuOpen(false);
-        setIsGhostOpen(false);
       }
     };
 
@@ -115,7 +106,29 @@ function App() {
     setActiveSection(section);
   };
 
-  const content = {
+  interface ContentType {
+    sections: { [key: string]: string };
+    contact: string;
+    name: string;
+    role: string;
+    statement: string;
+    downloadCV: string;
+    education: string;
+    experience: string;
+    skills: string;
+    certificates: string;
+    achievements: string;
+    certifications: string;
+    volunteerWork: string;
+    languages: string;
+    computerSkills: string;
+    adminSkills: string;
+    family: string;
+    age: string;
+    years: string;
+  }
+
+  const content: { en: ContentType; bn: ContentType } = {
     en: {
       name: 'Md Ridoan Mahmud Zisan',
       role: 'Student | Volunteer | Web Application Developer',
@@ -397,7 +410,7 @@ const certificates = [
   {
     title: {
       en: "Corporate etiquette",
-      bn: "ক cooperate শিষ্টাচার"
+      bn: "কর্পোরেট শিষ্টাচার"
     },
     image: "https://i.postimg.cc/vHjxTCdt/Corporate-etiquette.jpg"
   },
