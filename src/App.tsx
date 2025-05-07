@@ -1,6 +1,15 @@
 import {
   Download,
+  Phone,
+  MapPin,
+  Linkedin,
+  FileText,
+  Award,
   ScrollText,
+  Facebook,
+  Instagram,
+  Twitter,
+  MessageCircle,
   UserCircle,
   School,
   BookOpen,
@@ -10,7 +19,6 @@ import {
   HeartHandshake,
   Mail,
   Share2,
-  FileText,
 } from 'lucide-react';
 import { Element, scroller } from 'react-scroll';
 import { motion } from 'framer-motion';
@@ -34,6 +42,7 @@ function App() {
   const [activeSection, setActiveSection] = useState<string>('profile');
   const [age, setAge] = useState<number>(0);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [isGhostOpen, setIsGhostOpen] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -73,6 +82,7 @@ function App() {
         return;
       }
       setIsMenuOpen(false);
+      setIsGhostOpen(false);
     };
 
     const handleClickOutside = (event: MouseEvent) => {
@@ -81,6 +91,7 @@ function App() {
         !containerRef.current.contains(event.target as Node)
       ) {
         setIsMenuOpen(false);
+        setIsGhostOpen(false);
       }
     };
 
@@ -104,55 +115,7 @@ function App() {
     setActiveSection(section);
   };
 
-  const content: {
-    [key: string]: any;
-    en: {
-      name: string;
-      role: string;
-      statement: string;
-      downloadCV: string;
-      education: string;
-      experience: string;
-      skills: string;
-      certificates: string;
-      contact: string;
-      achievements: string;
-      certifications: string;
-      volunteerWork: string;
-      languages: string;
-      computerSkills: string;
-      adminSkills: string;
-      family: string;
-      age: string;
-      years: string;
-      sections: {
-        [key: string]: string;
-      };
-    };
-    bn: {
-      name: string;
-      role: string;
-      statement: string;
-      downloadCV: string;
-      education: string;
-      experience: string;
-      skills: string;
-      certificates: string;
-      contact: string;
-      achievements: string;
-      certifications: string;
-      volunteerWork: string;
-      languages: string;
-      computerSkills: string;
-      adminSkills: string;
-      family: string;
-      age: string;
-      years: string;
-      sections: {
-        [key: string]: string;
-      };
-    };
-  } = {
+  const content = {
     en: {
       name: 'Md Ridoan Mahmud Zisan',
       role: 'Student | Volunteer | Web Application Developer',
@@ -311,178 +274,178 @@ function App() {
     },
   ];
 
-  const certificates = [
-    // High-Demand Tech Skills
-    {
-      title: {
-        en: "Introduction to Artificial Intelligence",
-        bn: "কৃত্রিম বুদ্ধিমত্তার ভূমিকা"
-      },
-      image: "https://i.postimg.cc/VsZdZ25P/introduction-to-artificial-intelligence.png"
+const certificates = [
+  // High-Demand Tech Skills
+  {
+    title: {
+      en: "Introduction to Artificial Intelligence",
+      bn: "কৃত্রিম বুদ্ধিমত্তার ভূমিকা"
     },
-    {
-      title: {
-        en: "Introduction to Cyber Security",
-        bn: "সাইবার সিকিউরিটি পরিচিতি"
-      },
-      image: "https://i.postimg.cc/RZKhFFdv/introduction-to-cyber-security.png"
+    image: "https://i.postimg.cc/VsZdZ25P/introduction-to-artificial-intelligence.png"
+  },
+  {
+    title: {
+      en: "Introduction to Cyber Security",
+      bn: "সাইবার সিকিউরিটি পরিচিতি"
     },
-    {
-      title: {
-        en: "Introduction to Python",
-        bn: "পাইথনের পরিচিতি"
-      },
-      image: "https://i.postimg.cc/L6qhcvZY/Introduction-to-Python.jpg"
+    image: "https://i.postimg.cc/RZKhFFdv/introduction-to-cyber-security.png"
+  },
+  {
+    title: {
+      en: "Introduction to Python",
+      bn: "পাইথনের পরিচিতি"
     },
-    {
-      title: {
-        en: "Machine Learning",
-        bn: "মেশিন লার্নিং"
-      },
-      image: "https://i.postimg.cc/mrSrY5Kq/machine-learning.png"
+    image: "https://i.postimg.cc/L6qhcvZY/Introduction-to-Python.jpg"
+  },
+  {
+    title: {
+      en: "Machine Learning",
+      bn: "মেশিন লার্নিং"
     },
-    {
-      title: {
-        en: "Complete Web Development",
-        bn: "সম্পূর্ণ ওয়েব ডেভেলপমেন্ট"
-      },
-      image: "https://i.postimg.cc/gkr6Ym10/Complete-Web-Development.png"
+    image: "https://i.postimg.cc/mrSrY5Kq/machine-learning.png"
+  },
+  {
+    title: {
+      en: "Complete Web Development",
+      bn: "সম্পূর্ণ ওয়েব ডেভেলপমেন্ট"
     },
-    {
-      title: {
-        en: "Digital Marketing",
-        bn: "ডিজিটাল মার্কেটিং"
-      },
-      image: "https://i.postimg.cc/XvKr2JBs/digital-marketing.png"
+    image: "https://i.postimg.cc/gkr6Ym10/Complete-Web-Development.png"
+  },
+  {
+    title: {
+      en: "Digital Marketing",
+      bn: "ডিজিটাল মার্কেটিং"
     },
+    image: "https://i.postimg.cc/XvKr2JBs/digital-marketing.png"
+  },
 
-    // Sustainability & Global Issues
-    {
-      title: {
-        en: "Introduction to Sustainable Development in Practice",
-        bn: "অনুশীলনে টেকসই উন্নয়নের ভূমিকা"
-      },
-      image: "https://i.postimg.cc/tCL7pPhr/Introduction-to-Sustainable-Development-in-Practice.jpg"
+  // Sustainability & Global Issues
+  {
+    title: {
+      en: "Introduction to Sustainable Development in Practice",
+      bn: "অনুশীলনে টেকসই উন্নয়নের ভূমিকা"
     },
-    {
-      title: {
-        en: "Gender equality and human rights in climate action and renewable energy",
-        bn: "জলবায়ু কর্ম ও নবায়নযোগ্য শক্তিতে লিঙ্গ সমতা ও মানবাধিকার"
-      },
-      image: "https://i.postimg.cc/V6Dd8VRM/Gender-equality-and-human-rights-in-climate-action-and-renewable-energy.jpg"
+    image: "https://i.postimg.cc/tCL7pPhr/Introduction-to-Sustainable-Development-in-Practice.jpg"
+  },
+  {
+    title: {
+      en: "Gender equality and human rights in climate action and renewable energy",
+      bn: "জলবায়ু কর্ম ও নবায়নযোগ্য শক্তিতে লিঙ্গ সমতা ও মানবাধিকার"
     },
-    {
-      title: {
-        en: "Net Zero 101- What, Why and How",
-        bn: "নেট জিরো ১০১: কি, কেন এবং কিভাবে"
-      },
-      image: "https://i.postimg.cc/ZR7Kgybx/Net-Zero-101-What-Why-and-How.jpg"
+    image: "https://i.postimg.cc/V6Dd8VRM/Gender-equality-and-human-rights-in-climate-action-and-renewable-energy.jpg"
+  },
+  {
+    title: {
+      en: "Net Zero 101- What, Why and How",
+      bn: "নেট জিরো ১০১: কি, কেন এবং কিভাবে"
     },
-    {
-      title: {
-        en: "The UN Climate Change process",
-        bn: "জাতিসংঘের জলবায়ু পরিবর্তন প্রক্রিয়া"
-      },
-      image: "https://i.postimg.cc/zv4DDZRL/The-UN-Climate-Change-process.jpg"
+    image: "https://i.postimg.cc/ZR7Kgybx/Net-Zero-101-What-Why-and-How.jpg"
+  },
+  {
+    title: {
+      en: "The UN Climate Change process",
+      bn: "জাতিসংঘের জলবায়ু পরিবর্তন প্রক্রিয়া"
     },
+    image: "https://i.postimg.cc/zv4DDZRL/The-UN-Climate-Change-process.jpg"
+  },
 
-    // Academic & Professional Development
-    {
-      title: {
-        en: "Bangladesh Mathematical Olympiad",
-        bn: "বাংলাদেশ গণিত অলিম্পিয়াড"
-      },
-      image: "https://i.postimg.cc/pLFhFkWb/Bangladesh-Mathematical-Olympiad.png"
+  // Academic & Professional Development
+  {
+    title: {
+      en: "Bangladesh Mathematical Olympiad",
+      bn: "বাংলাদেশ গণিত অলিম্পিয়াড"
     },
-    {
-      title: {
-        en: "Business Case Solving Certificate",
-        bn: "ব্যবসায়িক কেস সমাধান সার্টিফিকেট"
-      },
-      image: "https://i.postimg.cc/4y27zSHZ/Business-Case-Solving-Certificate.png"
+    image: "https://i.postimg.cc/pLFhFkWb/Bangladesh-Mathematical-Olympiad.png"
+  },
+  {
+    title: {
+      en: "Business Case Solving Certificate",
+      bn: "ব্যবসায়িক কেস সমাধান সার্টিফিকেট"
     },
+    image: "https://i.postimg.cc/4y27zSHZ/Business-Case-Solving-Certificate.png"
+  },
 
-    // Professional Skills
-    {
-      title: {
-        en: "Presentation and Public Speaking",
-        bn: "প্রেজেন্টেশন ও পাবলিক স্পিকিং"
-      },
-      image: "https://i.postimg.cc/VvJLcL5Q/Presentation-and-Public-Speaking.png"
+  // Professional Skills
+  {
+    title: {
+      en: "Presentation and Public Speaking",
+      bn: "প্রেজেন্টেশন ও পাবলিক স্পিকিং"
     },
-    {
-      title: {
-        en: "CV writing and interview",
-        bn: "সিভি লেখা ও ইন্টারভিউ প্রস্তুতি"
-      },
-      image: "https://i.postimg.cc/cJGKMYCK/CV-writing-and-interview.jpg"
+    image: "https://i.postimg.cc/VvJLcL5Q/Presentation-and-Public-Speaking.png"
+  },
+  {
+    title: {
+      en: "CV writing and interview",
+      bn: "সিভি লেখা ও ইন্টারভিউ প্রস্তুতি"
     },
-    {
-      title: {
-        en: "Basic of management",
-        bn: "ম্যানেজমেন্টের মৌলিক বিষয়"
-      },
-      image: "https://i.postimg.cc/0jyKKsQc/Basic-of-management.jpg"
+    image: "https://i.postimg.cc/cJGKMYCK/CV-writing-and-interview.jpg"
+  },
+  {
+    title: {
+      en: "Basic of management",
+      bn: "ম্যানেজমেন্টের মৌলিক বিষয়"
     },
-    {
-      title: {
-        en: "Money management",
-        bn: "টাকা ব্যবস্থাপনা"
-      },
-      image: "https://i.postimg.cc/fLTRBvNb/Money-management.jpg"
+    image: "https://i.postimg.cc/0jyKKsQc/Basic-of-management.jpg"
+  },
+  {
+    title: {
+      en: "Money management",
+      bn: "টাকা ব্যবস্থাপনা"
     },
-    {
-      title: {
-        en: "Corporate etiquette",
-        bn: "ক cooperate শিষ্টাচার"
-      },
-      image: "https://i.postimg.cc/vHjxTCdt/Corporate-etiquette.jpg"
+    image: "https://i.postimg.cc/fLTRBvNb/Money-management.jpg"
+  },
+  {
+    title: {
+      en: "Corporate etiquette",
+      bn: "ক cooperate শিষ্টাচার"
     },
-    {
-      title: {
-        en: "Communication hacks",
-        bn: "যোগাযোগ কৌশল"
-      },
-      image: "https://i.postimg.cc/dQ5yPLHX/Communication-hacks.jpg"
+    image: "https://i.postimg.cc/vHjxTCdt/Corporate-etiquette.jpg"
+  },
+  {
+    title: {
+      en: "Communication hacks",
+      bn: "যোগাযোগ কৌশল"
     },
-    {
-      title: {
-        en: "Microsoft Office Starter Course Certificate",
-        bn: "মাইক্রোসফ্ট অফিস প্রাথমিক কোর্স সার্টিফিকেট"
-      },
-      image: "https://i.postimg.cc/bvPJ2hVk/Microsoft-Office-Starter-Course-Certificate.png"
+    image: "https://i.postimg.cc/dQ5yPLHX/Communication-hacks.jpg"
+  },
+  {
+    title: {
+      en: "Microsoft Office Starter Course Certificate",
+      bn: "মাইক্রোসফ্ট অফিস প্রাথমিক কোর্স সার্টিফিকেট"
     },
-    {
-      title: {
-        en: "Email Writing Certificate",
-        bn: "ইমেইল লেখার সার্টিফিকেট"
-      },
-      image: "https://i.postimg.cc/fLwJ1NxD/Email-Writing-Certificate.png"
+    image: "https://i.postimg.cc/bvPJ2hVk/Microsoft-Office-Starter-Course-Certificate.png"
+  },
+  {
+    title: {
+      en: "Email Writing Certificate",
+      bn: "ইমেইল লেখার সার্টিফিকেট"
     },
+    image: "https://i.postimg.cc/fLwJ1NxD/Email-Writing-Certificate.png"
+  },
 
-    // Language Proficiency
-    {
-      title: {
-        en: "English for Everyday Certificate",
-        bn: "দৈনন্দিন ইংরেজি সার্টিফিকেট"
-      },
-      image: "https://i.postimg.cc/nrrMcGRW/English-for-Everyday-Certificate.png"
+  // Language Proficiency
+  {
+    title: {
+      en: "English for Everyday Certificate",
+      bn: "দৈনন্দিন ইংরেজি সার্টিফিকেট"
     },
-    {
-      title: {
-        en: "Academic English grammar",
-        bn: "একাডেমিক ইংরেজি ব্যাকরণ"
-      },
-      image: "https://i.postimg.cc/qRLC7RkN/Academic-English-grammar.jpg"
+    image: "https://i.postimg.cc/nrrMcGRW/English-for-Everyday-Certificate.png"
+  },
+  {
+    title: {
+      en: "Academic English grammar",
+      bn: "একাডেমিক ইংরেজি ব্যাকরণ"
     },
-    {
-      title: {
-        en: "IELTS mock test solution",
-        bn: "আইইএলটিএস মক টেস্ট সমাধান"
-      },
-      image: "https://i.postimg.cc/L5W5qgG8/IELTS-mock-test-solution.jpg"
-    }
-  ];
+    image: "https://i.postimg.cc/qRLC7RkN/Academic-English-grammar.jpg"
+  },
+  {
+    title: {
+      en: "IELTS mock test solution",
+      bn: "আইইএলটিএস মক টেস্ট সমাধান"
+    },
+    image: "https://i.postimg.cc/L5W5qgG8/IELTS-mock-test-solution.jpg"
+  }
+];
 
   return (
     <div className="min-h-screen bg-slate-50">
