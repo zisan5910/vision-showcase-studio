@@ -11,6 +11,35 @@
     <link rel="manifest" href="/manifest.json" />
     <link rel="apple-touch-icon" href="icons/icon-192x192.png" />
     <title>Md Ridoan Mahmud Zisan</title>
+    <!-- Add base styles for the install popup -->
+    <style>
+      @keyframes fade-in {
+        0% { opacity: 0; transform: translateY(10px); }
+        100% { opacity: 1; transform: translateY(0); }
+      }
+      
+      @keyframes fade-out {
+        0% { opacity: 1; transform: translateY(0); }
+        100% { opacity: 0; transform: translateY(10px); }
+      }
+      
+      @keyframes scale-in {
+        0% { transform: scale(0.95); opacity: 0; }
+        100% { transform: scale(1); opacity: 1; }
+      }
+      
+      .animate-fade-in {
+        animation: fade-in 0.3s ease-out forwards;
+      }
+      
+      .animate-fade-out {
+        animation: fade-out 0.3s ease-out forwards;
+      }
+      
+      .animate-scale-in {
+        animation: scale-in 0.2s ease-out forwards;
+      }
+    </style>
   </head>
   <body>
     <div id="root"></div>

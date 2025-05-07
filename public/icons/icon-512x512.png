@@ -1,2 +1,6 @@
 
-<!-- This is just a placeholder, you'll need to create actual icon files -->
+<!-- This is a placeholder. You need to add actual icon files to the public/icons directory -->
+<!-- The icon files should be:
+     - icon-192x192.png (192x192 pixels)
+     - icon-512x512.png (512x512 pixels)
+-->
