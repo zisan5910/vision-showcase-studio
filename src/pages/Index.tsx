@@ -10,6 +10,7 @@ import AdminPanel from "@/components/AdminPanel";
 import { createCertificateRequest, findCertificateRequestByName, CertificateRequest } from "@/data/certificateRequests";
 import Logo from "@/components/Logo";
 import { Loader2 } from "lucide-react";
+import { PDFDocument, rgb, StandardFonts } from "pdf-lib";
 
 const Index = () => {
   const [userName, setUserName] = useState("");
@@ -167,25 +168,51 @@ const Index = () => {
       variant: "default",
     });
 
-    // In a real app, this would generate a PDF certificate
     try {
-      // Here you would generate or fetch a PDF
-      // For demo purposes, we're simulating it with a timeout
-      setTimeout(() => {
-        setDownloading(false);
-        toast({
-          title: "ডাউনলোড সম্পন্ন",
-          description: "আপনার সার্টিফিকেট ডাউনলোড হয়েছে।",
-          variant: "default",
-        });
-      }, 2000);
+      // Fetch the certificate template
+      const pdfBytes = await fetch('/Certificate.pdf').then(res => res.arrayBuffer());
+      
+      // Load the PDF document
+      const pdfDoc = await PDFDocument.load(pdfBytes);
+      const page = pdfDoc.getPages()[0];
+      
+      // Calculate text positioning for center alignment
+      const fontSize = 28;
+      const textWidth = userName.length * (fontSize * 0.6);
+      const xPos = (page.getWidth() / 2) - (textWidth / 2);
+      const yPos = 470; // Position where name should be placed
+      
+      // Draw the user name on the certificate
+      page.drawText(userName.toUpperCase(), {
+        x: xPos,
+        y: yPos,
+        size: fontSize,
+        color: rgb(0, 0, 0),
+        font: await pdfDoc.embedFont(StandardFonts.HelveticaBold),
+      });
+      
+      // Save the PDF and trigger download
+      const newPdfBytes = await pdfDoc.save();
+      const blob = new Blob([newPdfBytes], { type: 'application/pdf' });
+      const link = document.createElement('a');
+      link.href = URL.createObjectURL(blob);
+      link.download = `${userName}_Blood_Donation_Certificate.pdf`;
+      link.click();
+      
+      toast({
+        title: "ডাউনলোড সম্পন্ন",
+        description: "আপনার সার্টিফিকেট ডাউনলোড হয়েছে।",
+        variant: "default",
+      });
     } catch (error) {
-      setDownloading(false);
+      console.error('Error generating certificate:', error);
       toast({
         title: "ডাউনলোড ব্যর্থ",
         description: "সার্টিফিকেট ডাউনলোড করতে সমস্যা হয়েছে। পুনরায় চেষ্টা করুন।",
         variant: "destructive",
       });
+    } finally {
+      setDownloading(false);
     }
   };
 
