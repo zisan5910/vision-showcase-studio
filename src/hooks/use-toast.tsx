@@ -1,3 +1,4 @@
+
 import * as React from "react";
 import type {
   ToastActionElement,
@@ -185,5 +186,10 @@ function useToast() {
     dismiss: (toastId?: string) => dispatch({ type: "DISMISS_TOAST", toastId }),
   };
 }
+
+// Create ToastProvider component to use in App.tsx
+export const ToastProvider = ({ children }: { children: React.ReactNode }) => {
+  return <>{children}</>;
+};
 
 export { useToast, toast };
