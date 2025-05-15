@@ -1,25 +1,28 @@
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { Checkbox } from "@/components/ui/checkbox";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { useToast } from "@/components/ui/use-toast";
 import AdminPanel from "@/components/AdminPanel";
-import { createCertificateRequest, findCertificateRequestByName } from "@/data/certificateRequests";
+import { createCertificateRequest, findCertificateRequestByName, CertificateRequest } from "@/data/certificateRequests";
 import Logo from "@/components/Logo";
-import { Loader2, FileText, CheckCircle } from "lucide-react";
+import { Loader2 } from "lucide-react";
 import { PDFDocument, rgb, StandardFonts } from "pdf-lib";
 
 const Index = () => {
   const [userName, setUserName] = useState("");
-  const [step, setStep] = useState(1); // 1: Start, 2: Submitted, 3: Complete
+  const [formSubmitted, setFormSubmitted] = useState(false);
+  const [formOpened, setFormOpened] = useState(false);
+  const [requestSubmitted, setRequestSubmitted] = useState(false);
   const [checkingStatus, setCheckingStatus] = useState(false);
   const [certificateStatus, setCertificateStatus] = useState<"pending" | "approved" | "rejected" | null>(null);
   const [downloading, setDownloading] = useState(false);
   const { toast } = useToast();
 
-  const handleOpenGoogleForm = () => {
+  const handleOpenForm = () => {
     if (!userName.trim()) {
       toast({
         title: "নাম প্রয়োজন",
@@ -29,34 +32,24 @@ const Index = () => {
       return;
     }
 
+    // Open Google Form in a new tab
     window.open(
       "https://docs.google.com/forms/d/e/1FAIpQLSd2mTY3mfh8-C2BBtcXAVbcu7DkUstyVoH1SeeVxsPZjHiI0Q/viewform",
       "_blank"
     );
-    
-    toast({
-      title: "গুগল ফর্ম খোলা হয়েছে",
-      description: "ফর্ম পূরণ করে সাবমিট করুন, তারপর এখানে ফিরে আসুন",
-    });
+    setFormOpened(true);
   };
 
   const handleRequestCertificate = async () => {
-    if (!userName.trim()) {
-      toast({
-        title: "নাম প্রয়োজন",
-        description: "দয়া করে আপনার পুরো নাম লিখুন",
-        variant: "destructive",
-      });
-      return;
-    }
-    
+    // Add the request to the database
     const newRequest = await createCertificateRequest(userName);
     
     if (newRequest) {
-      setStep(2);
+      setRequestSubmitted(true);
       toast({
         title: "অনুরোধ সফল",
         description: "আপনার সার্টিফিকেট অনুরোধ পাঠানো হয়েছে। অনুমোদন পেলে আপনি ডাউনলোড করতে পারবেন।",
+        variant: "default",
       });
     } else {
       toast({
@@ -94,15 +87,16 @@ const Index = () => {
     setCertificateStatus(request.status);
 
     if (request.status === "approved") {
-      setStep(3);
       toast({
         title: "অনুমোদিত!",
         description: "আপনার সার্টিফিকেট অনুমোদিত হয়েছে। আপনি এখন এটি ডাউনলোড করতে পারেন।",
+        variant: "default",
       });
     } else if (request.status === "pending") {
       toast({
         title: "অপেক্ষমান",
         description: "আপনার সার্টিফিকেট এখনও অনুমোদনের অপেক্ষায় আছে। দয়া করে পরে আবার চেক করুন।",
+        variant: "default",
       });
     } else {
       toast({
@@ -123,8 +117,8 @@ const Index = () => {
       return;
     }
     
-    // Check status if we haven't already
-    if (certificateStatus !== "approved") {
+    // Check status first if we don't already know it
+    if (certificateStatus === null) {
       setCheckingStatus(true);
       const request = await findCertificateRequestByName(userName);
       setCheckingStatus(false);
@@ -141,21 +135,37 @@ const Index = () => {
       setCertificateStatus(request.status);
       
       if (request.status !== "approved") {
-        toast({
-          title: request.status === "pending" ? "অপেক্ষমান" : "প্রত্যাখ্যাত",
-          description: request.status === "pending" 
-            ? "আপনার সার্টিফিকেট এখনও অনুমোদনের অপেক্ষায় আছে। দয়া করে পরে আবার চেক করুন।" 
-            : "আপনার সার্টিফিকেট অনুরোধ প্রত্যাখ্যান করা হয়েছে।",
-          variant: request.status === "pending" ? "default" : "destructive",
-        });
+        if (request.status === "pending") {
+          toast({
+            title: "অপেক্ষমান",
+            description: "আপনার সার্টিফিকেট এখনও অনুমোদনের অপেক্ষায় আছে। দয়া করে পরে আবার চেক করুন।",
+            variant: "default",
+          });
+        } else {
+          toast({
+            title: "প্রত্যাখ্যাত",
+            description: "আপনার সার্টিফিকেট অনুরোধ প্রত্যাখ্যান করা হয়েছে।",
+            variant: "destructive",
+          });
+        }
         return;
       }
     }
     
+    if (certificateStatus !== "approved") {
+      toast({
+        title: "অপেক্ষমান",
+        description: "আপনার সার্টিফিকেট এখনও অনুমোদনের অপেক্ষায় আছে। দয়া করে পরে আবার চেক করুন।",
+        variant: "default",
+      });
+      return;
+    }
+
     setDownloading(true);
     toast({
       title: "ডাউনলোড শুরু হচ্ছে",
       description: "আপনার সার্টিফিকেট ডাউনলোড হচ্ছে...",
+      variant: "default",
     });
 
     try {
@@ -192,6 +202,7 @@ const Index = () => {
       toast({
         title: "ডাউনলোড সম্পন্ন",
         description: "আপনার সার্টিফিকেট ডাউনলোড হয়েছে।",
+        variant: "default",
       });
     } catch (error) {
       console.error('Error generating certificate:', error);
@@ -205,102 +216,6 @@ const Index = () => {
     }
   };
 
-  const renderStepContent = () => {
-    switch (step) {
-      case 1: // Initial step
-        return (
-          <div className="space-y-4">
-            <div>
-              <label htmlFor="name" className="block text-sm font-medium mb-2">
-                আপনার পুরো নাম
-              </label>
-              <Input
-                id="name"
-                placeholder="আপনার পুরো নাম লিখুন"
-                value={userName}
-                onChange={(e) => setUserName(e.target.value)}
-                className="w-full"
-              />
-            </div>
-
-            <div className="space-y-4">
-              <Button
-                className="w-full bg-red-600 hover:bg-red-700"
-                onClick={handleOpenGoogleForm}
-              >
-                <FileText className="mr-2 h-4 w-4" /> গুগল ফর্ম পূরণ করুন
-              </Button>
-              
-              <Button
-                className="w-full bg-green-600 hover:bg-green-700"
-                onClick={handleRequestCertificate}
-              >
-                সার্টিফিকেট অনুরোধ করুন
-              </Button>
-            </div>
-          </div>
-        );
-      
-      case 2: // Submitted, waiting for approval
-        return (
-          <div className="space-y-4">
-            <div className="p-4 bg-yellow-50 border-l-4 border-yellow-500 rounded-md">
-              <h3 className="font-semibold">অনুরোধ জমা হয়েছে!</h3>
-              <p className="text-sm mt-1">
-                আপনার অনুরোধ সফলভাবে জমা দেওয়া হয়েছে। এডমিন অনুমোদনের পর আপনি সার্টিফিকেট ডাউনলোড করতে পারবেন।
-              </p>
-            </div>
-            <Button 
-              className="w-full bg-blue-600 hover:bg-blue-700" 
-              onClick={checkStatus}
-              disabled={checkingStatus}
-            >
-              {checkingStatus ? (
-                <div className="flex items-center gap-2">
-                  <Loader2 className="h-4 w-4 animate-spin" />
-                  <span>স্টেটাস চেক করা হচ্ছে...</span>
-                </div>
-              ) : (
-                "স্টেটাস চেক করুন"
-              )}
-            </Button>
-          </div>
-        );
-      
-      case 3: // Approved, ready to download
-        return (
-          <div className="space-y-4">
-            <div className="p-4 bg-green-50 border-l-4 border-green-500 rounded-md">
-              <h3 className="font-semibold flex items-center">
-                <CheckCircle className="h-5 w-5 text-green-500 mr-2" />
-                সার্টিফিকেট অনুমোদিত!
-              </h3>
-              <p className="text-sm mt-1">
-                আপনার সার্টিফিকেট অনুমোদন করা হয়েছে। নিচের বাটন থেকে ডাউনলোড করুন।
-              </p>
-            </div>
-            <Button 
-              className="w-full bg-green-600 hover:bg-green-700" 
-              onClick={downloadCertificate}
-              disabled={downloading}
-            >
-              {downloading ? (
-                <div className="flex items-center gap-2">
-                  <Loader2 className="h-4 w-4 animate-spin" />
-                  <span>ডাউনলোড হচ্ছে...</span>
-                </div>
-              ) : (
-                "সার্টিফিকেট ডাউনলোড করুন"
-              )}
-            </Button>
-          </div>
-        );
-      
-      default:
-        return null;
-    }
-  };
-
   return (
     <div className="min-h-screen bg-gray-50">
       <div className="container mx-auto py-8 px-4">
@@ -311,7 +226,7 @@ const Index = () => {
           </h1>
         </div>
         
-        <Tabs defaultValue="user" className="max-w-md mx-auto">
+        <Tabs defaultValue="user" className="max-w-3xl mx-auto">
           <TabsList className="grid w-full grid-cols-2">
             <TabsTrigger value="user">ব্যবহারকারী</TabsTrigger>
             <TabsTrigger value="admin">এডমিন</TabsTrigger>
@@ -322,11 +237,101 @@ const Index = () => {
               <CardHeader>
                 <CardTitle>সার্টিফিকেট অনুরোধ</CardTitle>
                 <CardDescription>
-                  রক্তদান সার্টিফিকেট পেতে নিচের প্রক্রিয়া অনুসরণ করুন
+                  রক্তদান সার্টিফিকেট পেতে নিচের ফর্মটি পূরণ করুন
                 </CardDescription>
               </CardHeader>
               <CardContent>
-                {renderStepContent()}
+                <div className="space-y-4">
+                  <div>
+                    <label htmlFor="name" className="block text-sm font-medium mb-2">
+                      আপনার পুরো নাম
+                    </label>
+                    <Input
+                      id="name"
+                      placeholder="আপনার পুরো নাম লিখুন"
+                      value={userName}
+                      onChange={(e) => setUserName(e.target.value)}
+                      className="w-full"
+                    />
+                  </div>
+
+                  {!requestSubmitted ? (
+                    <>
+                      <Button
+                        className="w-full bg-red-600 hover:bg-red-700"
+                        onClick={handleOpenForm}
+                        disabled={formOpened}
+                      >
+                        {formOpened ? "ফর্ম খোলা হয়েছে" : "ফর্ম পূরণ করতে এখানে ক্লিক করুন"}
+                      </Button>
+
+                      {formOpened && (
+                        <div className="mt-4">
+                          <div className="bg-gray-50 p-4 border-l-4 border-red-500 rounded-md mb-4">
+                            <p className="text-sm">
+                              দয়া করে Google Form পূরণ করুন এবং সাবমিট করুন। ফর্ম সাবমিট করার পর এই পৃষ্ঠায় ফিরে আসুন।
+                            </p>
+                          </div>
+
+                          <div className="flex items-center space-x-2 mb-4">
+                            <Checkbox 
+                              id="formSubmitted" 
+                              checked={formSubmitted} 
+                              onCheckedChange={(checked) => setFormSubmitted(checked === true)}
+                            />
+                            <label htmlFor="formSubmitted" className="text-sm font-medium">
+                              আমি Google Form সফলভাবে সাবমিট করেছি
+                            </label>
+                          </div>
+
+                          <Button
+                            className="w-full bg-red-600 hover:bg-red-700"
+                            disabled={!formSubmitted}
+                            onClick={handleRequestCertificate}
+                          >
+                            সার্টিফিকেট অনুরোধ করুন
+                          </Button>
+                        </div>
+                      )}
+                    </>
+                  ) : (
+                    <div className="space-y-4">
+                      <div className="p-4 bg-yellow-50 border-l-4 border-yellow-500 rounded-md">
+                        <p className="text-sm">
+                          আপনার অনুরোধ সফলভাবে জমা হয়েছে। এডমিন অনুমোদনের পর আপনি সার্টিফিকেট ডাউনলোড করতে পারবেন।
+                        </p>
+                      </div>
+                      <Button 
+                        className="w-full bg-blue-600 hover:bg-blue-700" 
+                        onClick={checkStatus}
+                        disabled={checkingStatus}
+                      >
+                        {checkingStatus ? (
+                          <div className="flex items-center gap-2">
+                            <Loader2 className="h-4 w-4 animate-spin" />
+                            <span>চেক করা হচ্ছে...</span>
+                          </div>
+                        ) : (
+                          "স্টেটাস চেক করুন"
+                        )}
+                      </Button>
+                      <Button 
+                        className="w-full bg-green-600 hover:bg-green-700" 
+                        onClick={downloadCertificate}
+                        disabled={downloading || certificateStatus !== "approved"}
+                      >
+                        {downloading ? (
+                          <div className="flex items-center gap-2">
+                            <Loader2 className="h-4 w-4 animate-spin" />
+                            <span>ডাউনলোড হচ্ছে...</span>
+                          </div>
+                        ) : (
+                          "সার্টিফিকেট ডাউনলোড করুন"
+                        )}
+                      </Button>
+                    </div>
+                  )}
+                </div>
               </CardContent>
             </Card>
           </TabsContent>
